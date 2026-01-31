@@ -13,6 +13,21 @@
 #include <queue>
 using namespace std;
 
+// mee hui
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <signal.h>
+#include <sys/wait.h>
+
+#define SERVER_PORT 5555
+#define BACKLOG 10
+
+static int listen_fd;
+static SharedState* g_state = nullptr;
+
+
 // ---------------------------
 // Shared memory layout
 // (Your "4 integers" are in shared_int[])
@@ -22,6 +37,83 @@ struct SharedState {
     pthread_mutex_t shared_mutex;
     int shared_int[4];
 };
+
+
+// SIGCHLD handler (zombie cleanup)
+static void sigchld_handler(int signo) {
+    (void)signo;
+    while (waitpid(-1, NULL, WNOHANG) > 0);
+}
+
+// Setup SIGCHLD
+static void setup_sigchld() {
+    struct sigaction sa{};
+    sa.sa_handler = sigchld_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART | SA_NOCLDSTOP;
+    sigaction(SIGCHLD, &sa, NULL);
+}
+
+// TCP socket setup
+static int setup_server_socket() {
+    int fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (fd < 0) {
+        perror("socket");
+        exit(1);
+    }
+
+    int opt = 1;
+    setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+
+    struct sockaddr_in addr{};
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = INADDR_ANY;
+    addr.sin_port = htons(SERVER_PORT);
+
+    if (bind(fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+        perror("bind");
+        exit(1);
+    }
+
+    if (listen(fd, BACKLOG) < 0) {
+        perror("listen");
+        exit(1);
+    }
+
+    return fd;
+}
+
+/* Child process: client session
+   (Game logic handled elsewhere) */
+static void client_process(int client_fd, int player_id) {
+    close(listen_fd); // child does NOT accept()
+
+    char buf[128];
+    snprintf(buf, sizeof(buf), "WELCOME PLAYER %d\n", player_id);
+    write(client_fd, buf, strlen(buf));
+
+    // ---- Example idle loop ----
+
+    while (1) {
+        sleep(1);
+
+        pthread_mutex_lock(&g_state->shared_mutex);
+        if (g_state->shared_int[3] != 0) {
+            pthread_mutex_unlock(&g_state->shared_mutex);
+            break;
+        }
+        pthread_mutex_unlock(&g_state->shared_mutex);
+    }
+
+    /* mark disconnected */
+    pthread_mutex_lock(&g_state->shared_mutex);
+    g_state->shared_int[1] &= ~(1 << player_id);
+    pthread_mutex_unlock(&g_state->shared_mutex);
+
+    close(client_fd);
+    exit(0);
+}
+
 
 // ---------------------------
 // Logger queue (producer)
@@ -216,9 +308,14 @@ static SharedState* createOrOpenSharedMemory(bool create_new) {
 }
 
 int main() {
+
+    setup_sigchld();
+
     // 1) Create shared memory (server side)
     SharedState* st = createOrOpenSharedMemory(true);
     if (!st) return 1;
+
+    g_state = st;   
 
     // 2) Initialize mutex + shared ints (ONLY once, server side)
     std::memset(st, 0, sizeof(SharedState));
@@ -271,6 +368,8 @@ int main() {
     pthread_mutex_unlock(&st->shared_mutex);
     logPush("[MAIN] Game ended.");
 
+    st->shared_int[3] = 1;
+
     // 5) Wait scheduler to stop
     pthread_join(sched_tid, nullptr);
 
@@ -283,8 +382,52 @@ int main() {
     pthread_join(log_tid, nullptr);
 
     // Cleanup shared memory (demo)
-    munmap(st, sizeof(SharedState));
-    shm_unlink(SHM_NAME);
+  //  munmap(st, sizeof(SharedState));
+ //   shm_unlink(SHM_NAME);
     
+
+// ===========================
+// Real server accept loop
+// ===========================
+listen_fd = setup_server_socket();
+logPush("[SERVER] Listening on port 5555.");
+
+int next_player_id = 0;
+
+while (1) {
+    struct sockaddr_in cli{};
+    socklen_t len = sizeof(cli);
+
+    int client_fd = accept(listen_fd, (struct sockaddr*)&cli, &len);
+    if (client_fd < 0) continue;
+
+    pthread_mutex_lock(&st->shared_mutex);
+if (next_player_id >= MAX_PLAYERS) {
+    pthread_mutex_unlock(&st->shared_mutex);
+    close(client_fd);
+    continue;
+}
+int pid = next_player_id++;
+st->shared_int[1] |= (1 << pid); // mark connected
+pthread_mutex_unlock(&st->shared_mutex);
+
+
+    logPush("[SERVER] Client connected -> player " + to_string(pid));
+
+pid_t cpid = fork();
+if (cpid < 0) {                     
+    perror("fork");
+    close(client_fd);
+    continue;
+}
+if (cpid == 0) {
+    g_state = st;                 
+    client_process(client_fd, pid);
+}
+
+    close(client_fd); // parent
+}
+
+
     return 0;
 }
