@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 2026-01-31 13:14:40 [MAIN] Demo started. Watch game.log.
 2026-01-31 13:14:40 [SCHED] Round Robin scheduler started.
 2026-01-31 13:14:40 [LOG] Logger started.
@@ -52,3 +53,4 @@
 2026-01-31 13:22:50 [MAIN] Game ended.
 2026-01-31 13:22:50 [SCHED] Scheduler stopped.
 2026-01-31 13:22:50 [LOG] Logger stopped.
+
