@@ -114,17 +114,14 @@ static void startNewGame() {
 
 static void handleClient(int player_id) {
     std::cout << "=== DEBUG handleClient: Player " << player_id << " starting ===" << std::endl;
-    std::cerr << "Creating FIFO: /tmp/guess_game_client_" << player_id << std::endl;
 
     char fifo_name[100];
-    snprintf(fifo_name, sizeof(fifo_name), 
-             "/tmp/guess_game_client_%d", player_id);
+    snprintf(fifo_name, sizeof(fifo_name), "/tmp/guess_game_client_%d", player_id);
     
     // Create FIFO for this client
     mkfifo(fifo_name, 0666);
     
-    logPush("[CLIENT] Player " + to_string(player_id) + 
-            " connected via " + string(fifo_name));
+    logPush("[CLIENT] Player " + to_string(player_id) + " connected via " + string(fifo_name));
     
     int fd = open(fifo_name, O_RDONLY | O_NONBLOCK);
     
@@ -132,42 +129,77 @@ static void handleClient(int player_id) {
         char buffer[256];
         memset(buffer, 0, sizeof(buffer));
         
-        // Check if it's this player's turn
-        int shm_fd = shm_open(SHM_NAME, O_RDWR, 0666);
-        if (shm_fd < 0) break;
+        // ===== FUNCTION TO GET CURRENT PLAYER (FRESH) =====
+        auto getCurrentPlayer = []() -> int {
+            int shm_fd = shm_open(SHM_NAME, O_RDWR, 0666);
+            if (shm_fd < 0) return -1;
+            
+            SharedState* st = (SharedState*)mmap(nullptr, sizeof(SharedState), 
+                                               PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+            close(shm_fd);
+            if (!st) return -1;
+            
+            pthread_mutex_lock(&st->shared_mutex);
+            int current = st->shared_int[0];
+            pthread_mutex_unlock(&st->shared_mutex);
+            
+            munmap(st, sizeof(SharedState));
+            return current;
+        };
         
-        SharedState* st = (SharedState*)mmap(nullptr, sizeof(SharedState),
-                                           PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
-        close(shm_fd);
+        // Get FRESH current player
+        int current_player = getCurrentPlayer();
+        if (current_player == -1) break;
         
-        if (!st) break;
+        // Check if game ended
+        // (You might need to check game_over here too)
         
-        pthread_mutex_lock(&st->shared_mutex);
-        int current_player = st->shared_int[0];
-        int game_over = st->shared_int[3];
-        pthread_mutex_unlock(&st->shared_mutex);
+        cout << "DEBUG Player " << player_id << ": My turn? current=" << current_player << ", me=" << player_id << endl;
         
-        // ===== DEBUG ADDED HERE =====
-        cout << "DEBUG Player " << player_id << ": My turn? current=" 
-             << current_player << ", me=" << player_id << endl;
-        // ===== END DEBUG =====
-        
-        munmap(st, sizeof(SharedState));
-        
-        if (game_over == 1) {
-            break;  // Game ended
-        }
-        
-        if (current_player != player_id) {
-            // ===== DEBUG ADDED HERE =====
-            cout << "DEBUG Player " << player_id << ": Not my turn, sleeping..." << endl;
-            // ===== END DEBUG =====
-            usleep(50000);  // 0.05s
-            continue;
-        }
-        
-        // Read client guess
+        // Read client message (non-blocking)
         if (read(fd, buffer, sizeof(buffer)) > 0) {
+            cout << "DEBUG: Player " << player_id << " sent: " << buffer << endl;
+            
+            // ===== ASK_TURN HANDLER (WITH FRESH CHECK) =====
+            if (strstr(buffer, "ASK_TURN") != nullptr) {
+                int asking_player;
+                sscanf(buffer, "ASK_TURN %d", &asking_player);
+                
+                // Get FRESH current player again (right now!)
+                int current_now = getCurrentPlayer();
+                
+                // Send turn status
+                int fd_resp = open(fifo_name, O_WRONLY);
+                if (fd_resp > 0) {
+                    if (current_now == asking_player) {
+                        write(fd_resp, "YES_YOUR_TURN", 14);
+                        cout << "✅ SENT YES to Player " << asking_player << " (current=" << current_now << ")" << endl;
+                    } else {
+                        string msg = "NO Player " + to_string(current_now) + "'s turn";
+                        write(fd_resp, msg.c_str(), msg.length() + 1);
+                        cout << "❌ SENT NO to Player " << asking_player << " (current=" << current_now << ")" << endl;
+                    }
+                    close(fd_resp);
+                }
+                continue;  // Don't process as guess
+            }
+            
+            // ===== GUESS HANDLER =====
+            // Only process if it's REALLY this player's turn
+            if (current_player != player_id) {
+                cout << "🚫 REJECTING guess from Player " << player_id << " - It's Player " << current_player << "'s turn!" << endl;
+                
+                // Send rejection message
+                int fd_resp = open(fifo_name, O_WRONLY);
+                if (fd_resp > 0) {
+                    string msg = "REJECT Not your turn! Player " + to_string(current_player) + "'s turn";
+                    write(fd_resp, msg.c_str(), msg.length() + 1);
+                    close(fd_resp);
+                }
+                continue;
+            }
+            
+            // Process guess (only if it's really their turn)
             int guess;
             if (sscanf(buffer, "GUESS %*d %d", &guess) == 1) {
                 string response = processGuess(player_id, guess);
@@ -179,23 +211,23 @@ static void handleClient(int player_id) {
                     close(fd_resp);
                 }
                 
-                logPush("[CLIENT] Player " + to_string(player_id) + 
-                        " guessed " + to_string(guess) + " -> " + response);
-                        
+                logPush("[CLIENT] Player " + to_string(player_id) + " guessed " + to_string(guess) + " -> " + response);
+                
                 // If win, end game
                 if (response.find("WIN") != string::npos) {
+                    // Set game over flag
                     int shm_fd2 = shm_open(SHM_NAME, O_RDWR, 0666);
-                    if (shm_fd2 < 0) break;
-                    
-                    SharedState* st2 = (SharedState*)mmap(nullptr, sizeof(SharedState),
-                                                        PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd2, 0);
-                    close(shm_fd2);
-                    
-                    if (st2) {
-                        pthread_mutex_lock(&st2->shared_mutex);
-                        st2->shared_int[3] = 1;  // Game over
-                        pthread_mutex_unlock(&st2->shared_mutex);
-                        munmap(st2, sizeof(SharedState));
+                    if (shm_fd2 >= 0) {
+                        SharedState* st2 = (SharedState*)mmap(nullptr, sizeof(SharedState), 
+                                                            PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd2, 0);
+                        close(shm_fd2);
+                        
+                        if (st2) {
+                            pthread_mutex_lock(&st2->shared_mutex);
+                            st2->shared_int[3] = 1;  // Game over
+                            pthread_mutex_unlock(&st2->shared_mutex);
+                            munmap(st2, sizeof(SharedState));
+                        }
                     }
                     break;
                 }
@@ -278,8 +310,7 @@ static int findNextConnected(int current, int connected_mask) {
         int next = (current + step) % MAX_PLAYERS;
         if (connected_mask & (1 << next)) return next;
     }
-    return current;
-}
+    return (current + 1) % MAX_PLAYERS; }
 
 static void* roundRobinThread(void* arg) {
     SchedulerArgs* a = (SchedulerArgs*)arg;
@@ -406,10 +437,18 @@ int main() {
 
     pthread_mutex_lock(&st->shared_mutex);
     st->shared_int[0] = 0;   // current player
-    st->shared_int[1] = 0;   // connected_mask (start empty)
+    st->shared_int[1] = 0b1111;   // connected_mask (start empty)
     st->shared_int[2] = -1;
     st->shared_int[3] = 0;   // game running
     pthread_mutex_unlock(&st->shared_mutex);
+
+    // Create server FIFO
+    int fifo_result = mkfifo("/tmp/guess_game_server", 0666);
+    if (fifo_result == -1) {
+        perror("mkfifo failed");
+    } else {
+        cout << "Server FIFO CREATED SUCCESSFULLY" << endl;
+    }
 
     loadScores();
 
@@ -452,7 +491,7 @@ int main() {
         }
     }
         // ---- Scheduler thread ----
-    SchedulerArgs schedArgs{st, 800};
+    SchedulerArgs schedArgs{st, 10000};
     pthread_t sched_tid;
     pthread_create(&sched_tid, nullptr, roundRobinThread, &schedArgs);
 

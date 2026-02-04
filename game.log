@@ -1,331 +1,36 @@
-2026-02-04 18:26:49 [SCORE] No existing scores.txt, starting fresh.
-2026-02-04 18:26:49 [GAME] New secret number generated: 38
-2026-02-04 18:26:49 [GAME] New game started.
-2026-02-04 18:26:53 [MAIN] Forking client processes...
-2026-02-04 18:26:53 [MAIN] Forked player 0 (PID: 604)
-2026-02-04 18:26:53 [MAIN] Forked player 1 (PID: 605)
-2026-02-04 18:26:53 [MAIN] Forked player 2 (PID: 606)
-2026-02-04 18:26:53 [MAIN] Forked player 3 (PID: 607)
-2026-02-04 18:26:53 [SCHED] Round Robin scheduler started.
-2026-02-04 18:26:53 [MAIN] Server running.
-2026-02-04 18:26:53 [LOG] Logger started.
-2026-02-04 18:26:54 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:26:58 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:26:59 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:26:59 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:27:00 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:27:01 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:27:02 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:27:03 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:27:03 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:27:04 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:27:05 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:27:06 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:27:07 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:27:07 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:27:08 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:27:09 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:27:10 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:27:11 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:27:12 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:27:12 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:27:13 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:27:14 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:27:15 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:27:16 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:27:16 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:27:17 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:27:18 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:27:19 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:27:20 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:27:20 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:27:21 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:27:22 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:27:23 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:27:24 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:27:24 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:27:25 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:27:26 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:27:27 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:27:28 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:27:28 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:27:29 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:27:30 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:27:34 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:27:34 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:27:35 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:27:36 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:27:37 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:27:38 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:27:38 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:27:39 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:27:40 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:27:41 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:27:42 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:27:42 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:27:43 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:27:44 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:27:45 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:27:46 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:27:46 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:27:47 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:27:48 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:27:49 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:27:50 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:27:50 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:27:51 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:27:52 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:27:53 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:27:54 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:27:54 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:27:55 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:27:56 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:27:57 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:27:58 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:27:58 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:27:59 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:28:00 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:28:01 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:28:02 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:28:02 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:28:03 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:28:04 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:28:05 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:28:09 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:28:09 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:28:10 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:28:11 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:28:12 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:28:13 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:28:13 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:28:14 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:28:15 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:28:16 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:28:17 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:28:17 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:28:18 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:28:19 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:28:20 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:28:21 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:28:21 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:28:22 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:28:23 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:28:24 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:28:25 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:28:25 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:28:26 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:28:27 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:28:28 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:28:29 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:28:29 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:28:30 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:28:31 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:28:32 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:28:33 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:28:33 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:28:34 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:28:35 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:28:36 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:28:37 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:28:37 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:28:38 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:28:39 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:28:40 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:28:44 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:28:44 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:28:45 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:28:46 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:28:47 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:28:48 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:28:48 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:28:49 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:28:50 [SIGNAL] SIGINT received. Saving scores...
-2026-02-04 18:28:50 [SCORE] Scores saved to file.
-2026-02-04 18:28:50 [SCHED] Scheduler stopped.
-2026-02-04 18:28:50 [LOG] Logger stopped.
-2026-02-04 18:34:56 [SCORE] Scores loaded from file.
-2026-02-04 18:34:56 [GAME] New secret number generated: 42
-2026-02-04 18:34:56 [GAME] New game started.
-2026-02-04 18:35:00 [MAIN] Forking client processes...
-2026-02-04 18:35:00 [MAIN] Forked player 0 (PID: 865)
-2026-02-04 18:35:00 [MAIN] Forked player 1 (PID: 866)
-2026-02-04 18:35:00 [MAIN] Forked player 2 (PID: 867)
-2026-02-04 18:35:00 [MAIN] Forked player 3 (PID: 868)
-2026-02-04 18:35:00 [MAIN] Server running.
-2026-02-04 18:35:00 [SCHED] Round Robin scheduler started.
-2026-02-04 18:35:00 [LOG] Logger started.
-2026-02-04 18:35:00 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:35:01 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:35:02 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:35:03 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:35:04 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:35:04 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:35:05 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:35:06 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:35:07 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:35:10 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:35:11 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:35:12 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:35:13 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:35:14 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:35:14 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:35:15 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:35:16 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:35:17 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:35:18 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:35:18 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:35:19 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:35:20 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:35:21 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:35:22 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:35:22 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:35:23 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:35:24 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:35:25 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:35:26 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:35:26 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:35:27 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:35:28 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:35:29 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:35:30 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:35:30 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:35:31 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:35:32 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:35:33 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:35:34 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:35:34 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:35:35 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:35:36 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:35:37 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:35:38 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:35:38 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:35:39 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:35:40 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:35:41 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:35:42 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:35:42 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:35:46 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:35:47 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:35:48 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:35:49 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:35:49 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:35:50 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:35:51 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:35:52 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:35:53 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:35:53 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:35:54 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:35:55 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:35:56 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:35:57 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:35:57 [SCHED] Scheduler stopped.
-2026-02-04 18:36:06 [SIGNAL] SIGINT received. Saving scores...
-2026-02-04 18:36:06 [SCORE] Scores saved to file.
-2026-02-04 18:36:06 [LOG] Logger stopped.
-2026-02-04 18:39:52 [SCORE] Scores loaded from file.
-2026-02-04 18:39:52 [GAME] New secret number generated: 82
-2026-02-04 18:39:52 [GAME] New game started.
-2026-02-04 18:39:56 [MAIN] Forking client processes...
-2026-02-04 18:39:56 [MAIN] Forked player 0 (PID: 878)
-2026-02-04 18:39:56 [MAIN] Forked player 1 (PID: 879)
-2026-02-04 18:39:56 [MAIN] Forked player 2 (PID: 880)
-2026-02-04 18:39:56 [MAIN] Forked player 3 (PID: 881)
-2026-02-04 18:39:56 [MAIN] Server running.
-2026-02-04 18:39:56 [SCHED] Round Robin scheduler started.
-2026-02-04 18:39:56 [LOG] Logger started.
-2026-02-04 18:39:57 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:39:58 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:39:58 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:39:59 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:40:00 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:40:01 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:40:02 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:40:02 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:40:03 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:40:04 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:40:05 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:40:06 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:40:06 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:40:07 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:40:08 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:40:09 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:40:10 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:40:10 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:40:11 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:40:12 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:40:13 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:40:14 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:40:14 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:40:15 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:40:16 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:40:17 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:40:18 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:40:18 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:40:19 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:40:20 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:40:21 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:40:22 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:40:22 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:40:22 [SIGNAL] SIGINT received. Saving scores...
-2026-02-04 18:40:22 [SCORE] Scores saved to file.
-2026-02-04 18:40:23 [SCHED] Scheduler stopped.
-2026-02-04 18:40:23 [LOG] Logger stopped.
-2026-02-04 18:41:07 [SCORE] Scores loaded from file.
-2026-02-04 18:41:07 [GAME] New secret number generated: 45
-2026-02-04 18:41:07 [GAME] New game started.
-2026-02-04 18:41:11 [MAIN] Forking client processes...
-2026-02-04 18:41:11 [MAIN] Forked player 0 (PID: 889)
-2026-02-04 18:41:11 [MAIN] Forked player 1 (PID: 890)
-2026-02-04 18:41:11 [MAIN] Forked player 2 (PID: 891)
-2026-02-04 18:41:11 [MAIN] Forked player 3 (PID: 892)
-2026-02-04 18:41:11 [SCHED] Round Robin scheduler started.
-2026-02-04 18:41:11 [MAIN] Server running.
-2026-02-04 18:41:11 [LOG] Logger started.
-2026-02-04 18:41:12 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:41:13 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:41:14 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:41:14 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:41:15 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:41:16 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:41:17 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:41:18 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:41:18 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:41:19 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:41:20 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:41:21 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:41:22 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:41:22 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:41:23 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:41:24 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:41:25 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:41:26 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:41:26 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:41:27 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:41:28 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:41:29 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:41:30 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:41:30 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:41:31 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:41:32 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:41:33 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:41:34 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:41:34 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:41:38 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:41:39 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:41:40 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:41:41 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:41:41 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:41:42 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:41:43 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:41:44 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:41:45 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:41:45 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:41:46 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:41:47 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:41:48 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:41:49 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:41:49 [SCHED] Turn moved: 3 -> 0
-2026-02-04 18:41:50 [SCHED] Turn moved: 0 -> 1
-2026-02-04 18:41:51 [SCHED] Turn moved: 1 -> 2
-2026-02-04 18:41:52 [SCHED] Turn moved: 2 -> 3
-2026-02-04 18:41:53 [SCHED] Scheduler stopped.
+2026-02-05 02:12:39 [SCORE] No existing scores.txt, starting fresh.
+2026-02-05 02:12:39 [GAME] New secret number generated: 73
+2026-02-05 02:12:39 [GAME] New game started.
+2026-02-05 02:12:43 [MAIN] Forking client processes...
+2026-02-05 02:12:43 [MAIN] Forked player 0 (PID: 990)
+2026-02-05 02:12:43 [MAIN] Forked player 1 (PID: 991)
+2026-02-05 02:12:43 [MAIN] Forked player 2 (PID: 992)
+2026-02-05 02:12:43 [MAIN] Forked player 3 (PID: 993)
+2026-02-05 02:12:43 [SCHED] Round Robin scheduler started.
+2026-02-05 02:12:43 [MAIN] Server running.
+2026-02-05 02:12:43 [LOG] Logger started.
+2026-02-05 02:12:53 [SCHED] Turn moved: 0 -> 1
+2026-02-05 02:13:03 [SCHED] Turn moved: 1 -> 2
+2026-02-05 02:13:17 [SCHED] Turn moved: 2 -> 3
+2026-02-05 02:13:27 [SCHED] Turn moved: 3 -> 0
+2026-02-05 02:13:37 [SCHED] Turn moved: 0 -> 1
+2026-02-05 02:13:51 [SCHED] Turn moved: 1 -> 2
+2026-02-05 02:14:01 [SCHED] Turn moved: 2 -> 3
+2026-02-05 02:14:11 [SCHED] Turn moved: 3 -> 0
+2026-02-05 02:14:21 [SCHED] Turn moved: 0 -> 1
+2026-02-05 02:14:34 [SCHED] Turn moved: 1 -> 2
+2026-02-05 02:14:44 [SCHED] Turn moved: 2 -> 3
+2026-02-05 02:14:54 [SCHED] Turn moved: 3 -> 0
+2026-02-05 02:15:08 [SCHED] Turn moved: 0 -> 1
+2026-02-05 02:15:18 [SCHED] Turn moved: 1 -> 2
+2026-02-05 02:15:28 [SCHED] Turn moved: 2 -> 3
+2026-02-05 02:15:41 [SCHED] Turn moved: 3 -> 0
+2026-02-05 02:15:51 [SCHED] Turn moved: 0 -> 1
+2026-02-05 02:16:01 [SCHED] Turn moved: 1 -> 2
+2026-02-05 02:16:15 [SCHED] Turn moved: 2 -> 3
+2026-02-05 02:16:25 [SCHED] Turn moved: 3 -> 0
+2026-02-05 02:16:35 [SCHED] Turn moved: 0 -> 1
+2026-02-05 02:16:43 [SIGNAL] SIGINT received. Saving scores...
+2026-02-05 02:16:43 [SCORE] Scores saved to file.
+2026-02-05 02:16:45 [SCHED] Scheduler stopped.
+2026-02-05 02:16:45 [LOG] Logger stopped.

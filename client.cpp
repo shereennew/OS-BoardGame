@@ -1,5 +1,4 @@
-#define _POSIX_C_SOURCE 200809L
-
+// client_proper.cpp - WAITS PROPERLY FOR TURNS
 #include <iostream>
 #include <string>
 #include <cstring>
@@ -16,61 +15,131 @@ int main(int argc, char* argv[]) {
     }
     
     int player_id = atoi(argv[1]);
+    string my_fifo = "/tmp/guess_game_client_" + to_string(player_id);
     
-    // Server FIFO (for sending)
-    string server_fifo = "/tmp/guess_game_client_" + to_string(player_id);
+    cout << "👤 Player " << player_id << endl;
     
-    // Client FIFO (for receiving) - THE SERVER CREATES THIS
-    // Client doesn't create it, just opens it
+    // Wait for server
+    cout << "Connecting to server...";
+    while (access(my_fifo.c_str(), F_OK) == -1) {
+        sleep(1);
+        cout << ".";
+    }
+    cout << "\n✅ Connected!" << endl;
+    cout << "Game will start shortly..." << endl;
     
-    cout << "Player " << player_id << " started." << endl;
-    cout << "Enter guesses (1-100):" << endl;
-    
-    // Create server FIFO if doesn't exist
-    mkfifo(server_fifo.c_str(), 0666);
+    sleep(2);  // Wait for game to initialize
     
     while (true) {
-        // Get guess from user
-        cout << "Guess (1-100): ";
-        int guess;
-        cin >> guess;
+        // ===== STEP 1: ASK SERVER ONCE =====
+        cout << "\n[?] Checking if it's my turn..." << endl;
         
-        if (cin.fail() || guess < 1 || guess > 100) {
-            cout << "Invalid input. Try again." << endl;
-            cin.clear();
-            cin.ignore(1000, '\n');
-            continue;
+        string ask = "ASK_TURN " + to_string(player_id);
+        int fd = open(my_fifo.c_str(), O_WRONLY);
+        if (fd > 0) {
+            write(fd, ask.c_str(), ask.length() + 1);
+            close(fd);
         }
         
-        // Send to server
-        string message = "GUESS " + to_string(player_id) + " " + to_string(guess);
-        
-        int fd = open(server_fifo.c_str(), O_WRONLY);
-        if (fd < 0) {
-            cout << "Cannot connect to server!" << endl;
-            sleep(1);
-            continue;
-        }
-        
-        write(fd, message.c_str(), message.length() + 1);
-        close(fd);
-        
-        // Wait for response
-        string client_fifo = "/tmp/guess_game_client_" + to_string(player_id);
-        char buffer[256];
-        int fd_resp = open(client_fifo.c_str(), O_RDONLY);
+        // ===== STEP 2: GET RESPONSE =====
+        char response[256];
+        memset(response, 0, sizeof(response));
+        int fd_resp = open(my_fifo.c_str(), O_RDONLY);
         if (fd_resp > 0) {
-            read(fd_resp, buffer, sizeof(buffer));
-            cout << "Server: " << buffer << endl;
+            read(fd_resp, response, sizeof(response));
             close(fd_resp);
-            
-            if (strstr(buffer, "WIN") != nullptr) {
-                cout << "You won the game!" << endl;
-                break;
-            }
         }
         
-        sleep(1);
+        string resp_str = response;
+        cout << "📡 Server: " << resp_str << endl;
+        
+        // ===== STEP 3: HANDLE RESPONSE =====
+        if (resp_str.find("YES") != string::npos || 
+            resp_str.find("YOUR_TURN") != string::npos) {
+            
+            // ===== IT'S MY TURN - GET GUESS =====
+            cout << "\n═══════════════════════════════════════" << endl;
+            cout << "              🎮 YOUR TURN! 🎮" << endl;
+            cout << "═══════════════════════════════════════" << endl;
+            
+            while (true) {
+                cout << "\nEnter guess (1-100): ";
+                
+                string input;
+                cin >> input;
+                
+                // Check if valid number
+                bool valid = true;
+                for (char c : input) {
+                    if (!isdigit(c)) {
+                        valid = false;
+                        break;
+                    }
+                }
+                
+                if (!valid) {
+                    cout << "❌ Please enter a number." << endl;
+                    continue;
+                }
+                
+                int guess = stoi(input);
+                
+                if (guess < 1 || guess > 100) {
+                    cout << "❌ Guess must be between 1-100." << endl;
+                    continue;
+                }
+                
+                // ===== SEND GUESS =====
+                cout << "📤 Sending guess: " << guess << endl;
+                
+                string guess_msg = "GUESS " + to_string(player_id) + " " + to_string(guess);
+                int fd_send = open(my_fifo.c_str(), O_WRONLY);
+                if (fd_send > 0) {
+                    write(fd_send, guess_msg.c_str(), guess_msg.length() + 1);
+                    close(fd_send);
+                }
+                
+                // ===== GET RESULT =====
+                cout << "⏳ Waiting for result..." << endl;
+                
+                char result[256];
+                memset(result, 0, sizeof(result));
+                int fd_result = open(my_fifo.c_str(), O_RDONLY);
+                if (fd_result > 0) {
+                    read(fd_result, result, sizeof(result));
+                    close(fd_result);
+                }
+                
+                cout << "📡 Result: " << result << endl;
+                
+                if (strstr(result, "WIN") != nullptr) {
+                    cout << "\n🎉🎉🎉 CONGRATULATIONS! YOU WON! 🎉🎉🎉" << endl;
+                    return 0;
+                }
+                
+                break;  // Exit guess loop
+            }
+            
+            // ===== AFTER GUESSING, WAIT FOR NEXT TURN =====
+            cout << "\n⏳ Turn completed. Waiting for next turn..." << endl;
+            sleep(4);  // Wait 4 seconds before checking again
+            
+        } else {
+            // ===== NOT MY TURN =====
+            if (resp_str.find("NO") != string::npos || resp_str.find("Player") != string::npos) {
+                cout << "⏸️  Not your turn yet. ";
+                
+                // Extract which player's turn it is
+                size_t player_pos = resp_str.find("Player ");
+                if (player_pos != string::npos) {
+                    cout << "It's " << resp_str.substr(player_pos) << endl;
+                }
+            } else {
+                cout << "⏸️  Waiting for turn..." << endl;
+            }
+            
+            sleep(3);  // Wait 3 seconds before checking again
+        }
     }
     
     return 0;
