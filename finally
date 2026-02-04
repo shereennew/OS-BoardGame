@@ -212,7 +212,31 @@ static void logAppendDirect(const string& msg) {
 }
 
 
-// Save scores
+
+static string processGuess(int player_id, int guess) {
+    if (secret_number == -1) {
+        generateSecretNumber();
+    }
+
+    if (guess == secret_number) {
+        winner_id = player_id;
+        player_scores[player_id]++;  
+        saveScores();                
+
+        logPush("[GAME] Player " + to_string(player_id) + 
+                " guessed " + to_string(guess) + " and WON!");
+        
+        return "WIN Correct! You guessed the number.";
+    }
+    else if (guess < secret_number) {
+        return "HIGHER Guess higher";
+    }
+    else {
+        return "LOWER Guess lower";
+    }
+}
+
+// ====================== saveScores() ======================
 static void saveScores() {
     FILE* fp = fopen(SCORE_FILE, "w");
     if (!fp) return;
@@ -224,6 +248,7 @@ static void saveScores() {
     fclose(fp);
     logPush("[SCORE] Scores saved to file.");
 }
+
 
 // SIGINT handler :only notify the program that it should terminate, no direct save data
 // SIGINT handler: only notify program to stop
