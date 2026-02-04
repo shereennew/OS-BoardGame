@@ -1,3 +1,41 @@
+<<<<<<< HEAD
+2026-02-05 02:12:39 [SCORE] No existing scores.txt, starting fresh.
+2026-02-05 02:12:39 [GAME] New secret number generated: 73
+2026-02-05 02:12:39 [GAME] New game started.
+2026-02-05 02:12:43 [MAIN] Forking client processes...
+2026-02-05 02:12:43 [MAIN] Forked player 0 (PID: 990)
+2026-02-05 02:12:43 [MAIN] Forked player 1 (PID: 991)
+2026-02-05 02:12:43 [MAIN] Forked player 2 (PID: 992)
+2026-02-05 02:12:43 [MAIN] Forked player 3 (PID: 993)
+2026-02-05 02:12:43 [SCHED] Round Robin scheduler started.
+2026-02-05 02:12:43 [MAIN] Server running.
+2026-02-05 02:12:43 [LOG] Logger started.
+2026-02-05 02:12:53 [SCHED] Turn moved: 0 -> 1
+2026-02-05 02:13:03 [SCHED] Turn moved: 1 -> 2
+2026-02-05 02:13:17 [SCHED] Turn moved: 2 -> 3
+2026-02-05 02:13:27 [SCHED] Turn moved: 3 -> 0
+2026-02-05 02:13:37 [SCHED] Turn moved: 0 -> 1
+2026-02-05 02:13:51 [SCHED] Turn moved: 1 -> 2
+2026-02-05 02:14:01 [SCHED] Turn moved: 2 -> 3
+2026-02-05 02:14:11 [SCHED] Turn moved: 3 -> 0
+2026-02-05 02:14:21 [SCHED] Turn moved: 0 -> 1
+2026-02-05 02:14:34 [SCHED] Turn moved: 1 -> 2
+2026-02-05 02:14:44 [SCHED] Turn moved: 2 -> 3
+2026-02-05 02:14:54 [SCHED] Turn moved: 3 -> 0
+2026-02-05 02:15:08 [SCHED] Turn moved: 0 -> 1
+2026-02-05 02:15:18 [SCHED] Turn moved: 1 -> 2
+2026-02-05 02:15:28 [SCHED] Turn moved: 2 -> 3
+2026-02-05 02:15:41 [SCHED] Turn moved: 3 -> 0
+2026-02-05 02:15:51 [SCHED] Turn moved: 0 -> 1
+2026-02-05 02:16:01 [SCHED] Turn moved: 1 -> 2
+2026-02-05 02:16:15 [SCHED] Turn moved: 2 -> 3
+2026-02-05 02:16:25 [SCHED] Turn moved: 3 -> 0
+2026-02-05 02:16:35 [SCHED] Turn moved: 0 -> 1
+2026-02-05 02:16:43 [SIGNAL] SIGINT received. Saving scores...
+2026-02-05 02:16:43 [SCORE] Scores saved to file.
+2026-02-05 02:16:45 [SCHED] Scheduler stopped.
+2026-02-05 02:16:45 [LOG] Logger stopped.
+=======
 2026-02-05 00:03:20 [SCORE] Scores loaded from file.
 2026-02-05 00:03:20 [GAME] New secret number generated: 8
 2026-02-05 00:03:20 [GAME] New game started.
@@ -8,3 +46,4 @@
 2026-02-05 00:03:20 [MAIN] Forked player 3 (PID: 8586)
 2026-02-05 00:03:20 [MAIN] Server running.
 2026-02-05 00:03:20 [LOG] Logger started.
+>>>>>>> main
