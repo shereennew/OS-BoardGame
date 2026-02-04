@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 2026-02-05 02:12:39 [SCORE] No existing scores.txt, starting fresh.
 2026-02-05 02:12:39 [GAME] New secret number generated: 73
 2026-02-05 02:12:39 [GAME] New game started.
@@ -34,3 +35,15 @@
 2026-02-05 02:16:43 [SCORE] Scores saved to file.
 2026-02-05 02:16:45 [SCHED] Scheduler stopped.
 2026-02-05 02:16:45 [LOG] Logger stopped.
+=======
+2026-02-05 00:03:20 [SCORE] Scores loaded from file.
+2026-02-05 00:03:20 [GAME] New secret number generated: 8
+2026-02-05 00:03:20 [GAME] New game started.
+2026-02-05 00:03:20 [MAIN] Forking client processes...
+2026-02-05 00:03:20 [MAIN] Forked player 0 (PID: 8583)
+2026-02-05 00:03:20 [MAIN] Forked player 1 (PID: 8584)
+2026-02-05 00:03:20 [MAIN] Forked player 2 (PID: 8585)
+2026-02-05 00:03:20 [MAIN] Forked player 3 (PID: 8586)
+2026-02-05 00:03:20 [MAIN] Server running.
+2026-02-05 00:03:20 [LOG] Logger started.
+>>>>>>> main

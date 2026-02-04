@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <sys/file.h>
 #include <unistd.h>
 #include <signal.h>
 
@@ -17,7 +18,6 @@ using namespace std;
 
 // ---------------------------
 // Shared memory layout
-// (Your "4 integers" are in shared_int[])
 // ---------------------------
 struct SharedState {
     pthread_mutex_t shared_mutex;
@@ -94,10 +94,10 @@ static string processGuess(int player_id, int guess) {
         return "WIN Correct! You guessed the number.";
     }
     else if (guess < secret_number) {
-        return "HIGHER Guess higher";
+        return "HIGHER! Guess higher!";
     }
     else {
-        return "LOWER Guess lower";
+        return "LOWER! Guess lower!";
     }
 }
 
@@ -111,8 +111,22 @@ static void startNewGame() {
 /* =========================================================
    =============== Member 3: Client Handler ================
    ========================================================= */
+static void logAppendDirect(const string& msg) {
+    int fd = open("game.log", O_WRONLY | O_CREAT | O_APPEND, 0666);
+    if (fd < 0) return;
 
+    flock(fd, LOCK_EX); // lock file (prevents mixed lines)
+
+    string line = nowString() + " " + msg + "\n";
+    write(fd, line.c_str(), line.size());
+
+    flock(fd, LOCK_UN);
+    close(fd);
+}
+
+static bool connected = false;
 static void handleClient(int player_id) {
+<<<<<<< HEAD
     std::cout << "=== DEBUG handleClient: Player " << player_id << " starting ===" << std::endl;
 
     char fifo_name[100];
@@ -200,16 +214,75 @@ static void handleClient(int player_id) {
             }
             
             // Process guess (only if it's really their turn)
+=======
+    char fifo_name[100];
+    snprintf(fifo_name, sizeof(fifo_name), "/tmp/guess_game_client_%d", player_id);
+
+    // Create FIFO for this client (server side)
+    unlink(fifo_name);
+    mkfifo(fifo_name, 0666);
+
+    // Open FIFO for reading guesses (non-blocking)
+    int fd = open(fifo_name, O_RDWR | O_NONBLOCK);
+
+    if (fd < 0) {
+        logPush("[CLIENT] Failed to open FIFO for player " + to_string(player_id));
+        return;
+    }
+
+    // ---- Open shared memory ONCE ----
+    int shm_fd = shm_open(SHM_NAME, O_RDWR, 0666);
+    if (shm_fd < 0) {
+        close(fd);
+        return;
+    }
+
+    SharedState* st = (SharedState*)mmap(nullptr, sizeof(SharedState),
+                                         PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+    close(shm_fd);
+
+    if (st == MAP_FAILED) {
+        close(fd);
+        return;
+    }
+
+    logPush("[CLIENT] Player " + to_string(player_id) + " connected via " + string(fifo_name));
+
+    while (true) {
+        // Check game status + turn
+        pthread_mutex_lock(&st->shared_mutex);
+        int current_player = st->shared_int[0];
+        int game_over      = st->shared_int[3];
+        pthread_mutex_unlock(&st->shared_mutex);
+
+        if (game_over == 1) break;
+
+        if (current_player != player_id) {
+            usleep(50 * 1000);
+            continue;
+        }
+
+        // Read guess
+        char buffer[256];
+        memset(buffer, 0, sizeof(buffer));
+        ssize_t n = read(fd, buffer, sizeof(buffer));
+
+        if (n > 0) {
+>>>>>>> main
             int guess;
             if (sscanf(buffer, "GUESS %*d %d", &guess) == 1) {
-                string response = processGuess(player_id, guess);
-                
-                // Send response back to client
-                int fd_resp = open(fifo_name, O_WRONLY);
-                if (fd_resp > 0) {
-                    write(fd_resp, response.c_str(), response.length() + 1);
-                    close(fd_resp);
+                if (!connected) {
+                    pthread_mutex_lock(&st->shared_mutex);
+                    st->shared_int[1] |= (1 << player_id);
+                    pthread_mutex_unlock(&st->shared_mutex);
+                    printf("Player %d CONNECTED\n", player_id);
+                    fflush(stdout);
+                    connected = true;
+
+                    logPush("[CLIENT] Player " + to_string(player_id) + " is connected");
+                    
                 }
+<<<<<<< HEAD
                 
                 logPush("[CLIENT] Player " + to_string(player_id) + " guessed " + to_string(guess) + " -> " + response);
                 
@@ -229,20 +302,53 @@ static void handleClient(int player_id) {
                             munmap(st2, sizeof(SharedState));
                         }
                     }
+=======
+
+                // Log guess (direct append works even in forked child)
+                logAppendDirect("[GAME] Player " + to_string(player_id) +
+                                " guess number " + to_string(guess));
+
+                string response = processGuess(player_id, guess);
+
+                // Send response back (same FIFO, your current design)
+                if (write(fd, response.c_str(), response.size() + 1) < 0) {
+                    logPush("[CLIENT] Failed to write response to player " + to_string(player_id));
+                }
+
+                pthread_mutex_lock(&st->shared_mutex);
+                st->shared_int[2] = 1;   // current player finished move
+                pthread_mutex_unlock(&st->shared_mutex);
+
+
+                // If win -> end game
+                if (response.find("WIN") != string::npos) {
+                    pthread_mutex_lock(&st->shared_mutex);
+                    st->shared_int[3] = 1;
+                    pthread_mutex_unlock(&st->shared_mutex);
+>>>>>>> main
                     break;
                 }
             }
+        } else {
+            // n == 0: no writer yet OR client closed; treat as "no input" for now
+            // n < 0 and errno==EAGAIN: no data (non-blocking), normal
+            usleep(100 * 1000);
         }
-        
-        usleep(100000);  // 0.1s delay
     }
-    
+
+    pthread_mutex_lock(&st->shared_mutex);
+    st->shared_int[1] &= ~(1 << player_id);
+    pthread_mutex_unlock(&st->shared_mutex);
+
+    munmap(st, sizeof(SharedState));
     close(fd);
     unlink(fifo_name);
+
     logPush("[CLIENT] Player " + to_string(player_id) + " disconnected");
 }
 
-// Save scores
+
+// ====================== saveScores() ======================
 static void saveScores() {
     FILE* fp = fopen(SCORE_FILE, "w");
     if (!fp) return;
@@ -254,6 +360,7 @@ static void saveScores() {
     fclose(fp);
     logPush("[SCORE] Scores saved to file.");
 }
+
 
 // SIGINT handler :only notify the program that it should terminate, no direct save data
 // SIGINT handler: only notify program to stop
@@ -306,56 +413,70 @@ struct SchedulerArgs {
 };
 
 static int findNextConnected(int current, int connected_mask) {
+    if (connected_mask == 0) return -1; // nobody connected
+
     for (int step = 1; step <= MAX_PLAYERS; step++) {
         int next = (current + step) % MAX_PLAYERS;
         if (connected_mask & (1 << next)) return next;
     }
+<<<<<<< HEAD
     return (current + 1) % MAX_PLAYERS; }
+=======
+
+    // If we get here, it means ONLY current is connected (or mask weird)
+    if (connected_mask & (1 << current)) return current;
+    return -1;
+}
+>>>>>>> main
 
 static void* roundRobinThread(void* arg) {
     SchedulerArgs* a = (SchedulerArgs*)arg;
     SharedState* st = a->st;
 
-    logPush("[SCHED] Round Robin scheduler started.");
-
     while (true) {
-        usleep(a->quantum_ms * 1000);
+        usleep(50 * 1000); 
 
         pthread_mutex_lock(&st->shared_mutex);
 
         int game_status    = st->shared_int[3];
         int current_player = st->shared_int[0];
         int connected_mask = st->shared_int[1];
+        int turn_done      = st->shared_int[2];
 
         if (game_status != 0) {
             pthread_mutex_unlock(&st->shared_mutex);
             break;
         }
 
-        if ((connected_mask & (1 << current_player)) == 0) {
-            int fixed = findNextConnected(current_player, connected_mask);
-            st->shared_int[0] = fixed;
+        if (connected_mask == 0) {
             pthread_mutex_unlock(&st->shared_mutex);
-
-            logPush("[SCHED] Current player disconnected -> skip to player " +
-                    to_string(fixed));
             continue;
         }
 
-        int next = findNextConnected(current_player, connected_mask);
-        st->shared_int[0] = next;
+        // current not connected -> skip immediately
+        if ((connected_mask & (1 << current_player)) == 0) {
+            int fixed = findNextConnected(current_player, connected_mask);
+            if (fixed != -1) {
+                st->shared_int[0] = fixed;
+                st->shared_int[2] = 0;  
+            }
+            pthread_mutex_unlock(&st->shared_mutex);
+            continue;
+        }
+
+
+        // ONLY rotate when current player finished a move
+        if (turn_done == 1) {
+            int next = findNextConnected(current_player, connected_mask);
+            if (next != -1) st->shared_int[0] = next;
+            st->shared_int[2] = 0; // reset turn_done
+        }
 
         pthread_mutex_unlock(&st->shared_mutex);
-
-        if (next != current_player) {
-            logPush("[SCHED] Turn moved: " + to_string(current_player) +
-                    " -> " + to_string(next));
-        }
     }
-
-    logPush("[SCHED] Scheduler stopped.");
     return nullptr;
 }
+
 
 // ---------------------------
 // Logger Thread
@@ -437,8 +558,13 @@ int main() {
 
     pthread_mutex_lock(&st->shared_mutex);
     st->shared_int[0] = 0;   // current player
+<<<<<<< HEAD
     st->shared_int[1] = 0b1111;   // connected_mask (start empty)
     st->shared_int[2] = -1;
+=======
+    st->shared_int[1] = 0;   // connected_mask (start empty)
+    st->shared_int[2] = 0;   // turn_done 
+>>>>>>> main
     st->shared_int[3] = 0;   // game running
     pthread_mutex_unlock(&st->shared_mutex);
 
@@ -456,21 +582,8 @@ int main() {
     startNewGame();  // Start the guessing game!
     // ============ END ADDED CODE ============
 
-    printf("Server listening...\n");
-    printf("Server listening...\n");
+    printf("Server listening on port 8080...\n");
     printf("Waiting for players to connect...\n");
-
-    // ---- Simulate players connecting ----
-    for (int i = 0; i < MAX_PLAYERS; i++) {
-        printf("Waiting for player %d to connect...\n", i + 1);
-        sleep(1); // simulate delay
-
-        pthread_mutex_lock(&st->shared_mutex);
-        st->shared_int[1] |= (1 << i); // mark player connected
-        pthread_mutex_unlock(&st->shared_mutex);
-
-        printf("Player %d connected!\n", i + 1);
-    }
 
     printf("Game started!\n");
 

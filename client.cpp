@@ -5,15 +5,27 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/mman.h>
+#include <pthread.h>
+#include <cstdlib>
 
 using namespace std;
 
+struct SharedState {
+    pthread_mutex_t shared_mutex;
+    int shared_int[4];
+};
+
+static const char* SHM_NAME = "/guess_game_shm_demo";
+
+static void clearScreen() { system("clear"); }
+
 int main(int argc, char* argv[]) {
     if (argc != 2) {
-        cout << "Usage: ./client <player_id>" << endl;
+        cout << "Usage: ./client <player_id>\n";
         return 1;
     }
-    
+
     int player_id = atoi(argv[1]);
     string my_fifo = "/tmp/guess_game_client_" + to_string(player_id);
     
@@ -141,6 +153,7 @@ int main(int argc, char* argv[]) {
             sleep(3);  // Wait 3 seconds before checking again
         }
     }
-    
+
+    munmap(st, sizeof(SharedState));
     return 0;
 }
