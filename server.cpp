@@ -1,3 +1,4 @@
+#include <iostream>
 #include <pthread.h>
 #include <fcntl.h>
 #include <sys/mman.h>
@@ -60,6 +61,153 @@ static void loadScores() {
 
     fclose(fp);
     logPush("[SCORE] Scores loaded from file.");
+}
+
+/* =========================================================
+   =============== Member 3: Game Logic ====================
+   ========================================================= */
+
+static int secret_number = -1;
+static int winner_id = -1;
+
+// Generate a new secret number
+static void generateSecretNumber() {
+    srand(time(nullptr) ^ getpid());
+    secret_number = (rand() % 100) + 1;  // 1 to 100
+    logPush("[GAME] New secret number generated: " + to_string(secret_number));
+}
+
+// Process a guess from a player
+static string processGuess(int player_id, int guess) {
+    if (secret_number == -1) {
+        generateSecretNumber();
+    }
+
+    if (guess == secret_number) {
+        winner_id = player_id;
+        player_scores[player_id]++;  // Increase score
+        
+        // Log win
+        logPush("[GAME] Player " + to_string(player_id) + 
+                " guessed " + to_string(guess) + " and WON!");
+        
+        return "WIN Correct! You guessed the number.";
+    }
+    else if (guess < secret_number) {
+        return "HIGHER Guess higher";
+    }
+    else {
+        return "LOWER Guess lower";
+    }
+}
+
+// Start a new game
+static void startNewGame() {
+    generateSecretNumber();
+    winner_id = -1;
+    logPush("[GAME] New game started.");
+}
+
+/* =========================================================
+   =============== Member 3: Client Handler ================
+   ========================================================= */
+
+static void handleClient(int player_id) {
+    std::cout << "=== DEBUG handleClient: Player " << player_id << " starting ===" << std::endl;
+    std::cerr << "Creating FIFO: /tmp/guess_game_client_" << player_id << std::endl;
+
+    char fifo_name[100];
+    snprintf(fifo_name, sizeof(fifo_name), 
+             "/tmp/guess_game_client_%d", player_id);
+    
+    // Create FIFO for this client
+    mkfifo(fifo_name, 0666);
+    
+    logPush("[CLIENT] Player " + to_string(player_id) + 
+            " connected via " + string(fifo_name));
+    
+    int fd = open(fifo_name, O_RDONLY | O_NONBLOCK);
+    
+    while (true) {
+        char buffer[256];
+        memset(buffer, 0, sizeof(buffer));
+        
+        // Check if it's this player's turn
+        int shm_fd = shm_open(SHM_NAME, O_RDWR, 0666);
+        if (shm_fd < 0) break;
+        
+        SharedState* st = (SharedState*)mmap(nullptr, sizeof(SharedState),
+                                           PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+        close(shm_fd);
+        
+        if (!st) break;
+        
+        pthread_mutex_lock(&st->shared_mutex);
+        int current_player = st->shared_int[0];
+        int game_over = st->shared_int[3];
+        pthread_mutex_unlock(&st->shared_mutex);
+        
+        // ===== DEBUG ADDED HERE =====
+        cout << "DEBUG Player " << player_id << ": My turn? current=" 
+             << current_player << ", me=" << player_id << endl;
+        // ===== END DEBUG =====
+        
+        munmap(st, sizeof(SharedState));
+        
+        if (game_over == 1) {
+            break;  // Game ended
+        }
+        
+        if (current_player != player_id) {
+            // ===== DEBUG ADDED HERE =====
+            cout << "DEBUG Player " << player_id << ": Not my turn, sleeping..." << endl;
+            // ===== END DEBUG =====
+            usleep(50000);  // 0.05s
+            continue;
+        }
+        
+        // Read client guess
+        if (read(fd, buffer, sizeof(buffer)) > 0) {
+            int guess;
+            if (sscanf(buffer, "GUESS %*d %d", &guess) == 1) {
+                string response = processGuess(player_id, guess);
+                
+                // Send response back to client
+                int fd_resp = open(fifo_name, O_WRONLY);
+                if (fd_resp > 0) {
+                    write(fd_resp, response.c_str(), response.length() + 1);
+                    close(fd_resp);
+                }
+                
+                logPush("[CLIENT] Player " + to_string(player_id) + 
+                        " guessed " + to_string(guess) + " -> " + response);
+                        
+                // If win, end game
+                if (response.find("WIN") != string::npos) {
+                    int shm_fd2 = shm_open(SHM_NAME, O_RDWR, 0666);
+                    if (shm_fd2 < 0) break;
+                    
+                    SharedState* st2 = (SharedState*)mmap(nullptr, sizeof(SharedState),
+                                                        PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd2, 0);
+                    close(shm_fd2);
+                    
+                    if (st2) {
+                        pthread_mutex_lock(&st2->shared_mutex);
+                        st2->shared_int[3] = 1;  // Game over
+                        pthread_mutex_unlock(&st2->shared_mutex);
+                        munmap(st2, sizeof(SharedState));
+                    }
+                    break;
+                }
+            }
+        }
+        
+        usleep(100000);  // 0.1s delay
+    }
+    
+    close(fd);
+    unlink(fifo_name);
+    logPush("[CLIENT] Player " + to_string(player_id) + " disconnected");
 }
 
 // Save scores
@@ -257,37 +405,78 @@ int main() {
     initProcessSharedMutex(&st->shared_mutex);
 
     pthread_mutex_lock(&st->shared_mutex);
-    st->shared_int[0] = 0;
-    st->shared_int[1] = 0b1111;
+    st->shared_int[0] = 0;   // current player
+    st->shared_int[1] = 0;   // connected_mask (start empty)
     st->shared_int[2] = -1;
-    st->shared_int[3] = 0;
+    st->shared_int[3] = 0;   // game running
     pthread_mutex_unlock(&st->shared_mutex);
 
     loadScores();
 
-    pthread_t log_tid;
-    pthread_create(&log_tid, nullptr, loggerThread, nullptr);
+    // ============ ADD THIS LINE ============
+    startNewGame();  // Start the guessing game!
+    // ============ END ADDED CODE ============
 
+    printf("Server listening...\n");
+    printf("Server listening...\n");
+    printf("Waiting for players to connect...\n");
+
+    // ---- Simulate players connecting ----
+    for (int i = 0; i < MAX_PLAYERS; i++) {
+        printf("Waiting for player %d to connect...\n", i + 1);
+        sleep(1); // simulate delay
+
+        pthread_mutex_lock(&st->shared_mutex);
+        st->shared_int[1] |= (1 << i); // mark player connected
+        pthread_mutex_unlock(&st->shared_mutex);
+
+        printf("Player %d connected!\n", i + 1);
+    }
+
+    printf("Game started!\n");
+
+    logPush("[MAIN] Forking client processes...");
+    
+    // Fork child processes for 4 players
+    for (int i = 0; i < 4; i++) {
+        pid_t pid = fork();
+        if (pid == 0) {
+            // Child process: handle one client
+            handleClient(i);
+            exit(0);  // IMPORTANT: Exit after handling
+        }
+        else if (pid > 0) {
+            printf("Forked player %d (PID: %d)\n", i, pid);
+            logPush("[MAIN] Forked player " + to_string(i) + 
+                    " (PID: " + to_string(pid) + ")");
+        }
+    }
+        // ---- Scheduler thread ----
     SchedulerArgs schedArgs{st, 800};
     pthread_t sched_tid;
     pthread_create(&sched_tid, nullptr, roundRobinThread, &schedArgs);
 
-    logPush("[MAIN] Demo started. Watch game.log.");
+    // ---- Logger thread ----
+    pthread_t log_tid;
+    pthread_create(&log_tid, nullptr, loggerThread, nullptr);
+    
+    logPush("[MAIN] Server running.");
 
+    // ---- Main loop ----
     while (!g_stop) {
-        usleep(100 * 1000); // 0.1s
-        }
-        
+        usleep(100 * 1000);
+    }
+
+    printf("Server shutting down...\n");
     logPush("[SIGNAL] SIGINT received. Saving scores...");
+
     saveScores();
-        
+
     pthread_mutex_lock(&st->shared_mutex);
-    st->shared_int[3] = 1;
+    st->shared_int[3] = 1; // stop scheduler
     pthread_mutex_unlock(&st->shared_mutex);
 
     pthread_join(sched_tid, nullptr);
-
-    saveScores();
 
     pthread_mutex_lock(&log_mutex);
     logger_running = false;
