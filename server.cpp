@@ -170,6 +170,10 @@ static void handleClient(int player_id) {
         if (read(fd, buffer, sizeof(buffer)) > 0) {
             int guess;
             if (sscanf(buffer, "GUESS %*d %d", &guess) == 1) {
+
+                logAppendDirect("[GAME] Player " + to_string(player_id) +
+                    " guess number " + to_string(guess));
+
                 string response = processGuess(player_id, guess);
                 
                 // Send response back to client
@@ -209,6 +213,20 @@ static void handleClient(int player_id) {
     unlink(fifo_name);
     logPush("[CLIENT] Player " + to_string(player_id) + " disconnected");
 }
+
+static void logAppendDirect(const string& msg) {
+    int fd = open("game.log", O_WRONLY | O_CREAT | O_APPEND, 0666);
+    if (fd < 0) return;
+
+    flock(fd, LOCK_EX); // lock file (prevents mixed lines)
+
+    string line = nowString() + " " + msg + "\n";
+    write(fd, line.c_str(), line.size());
+
+    flock(fd, LOCK_UN);
+    close(fd);
+}
+
 
 // Save scores
 static void saveScores() {
@@ -317,8 +335,7 @@ static void* roundRobinThread(void* arg) {
         pthread_mutex_unlock(&st->shared_mutex);
 
         if (next != current_player) {
-            logPush("[SCHED] Turn moved: " + to_string(current_player) +
-                    " -> " + to_string(next));
+            logPush("[SCHED] It is now Player " + to_string(next) + "'s turn");
         }
     }
 
@@ -417,8 +434,7 @@ int main() {
     startNewGame();  // Start the guessing game!
     // ============ END ADDED CODE ============
 
-    printf("Server listening...\n");
-    printf("Server listening...\n");
+    printf("Server listening on port 8080...\n");
     printf("Waiting for players to connect...\n");
 
     // ---- Simulate players connecting ----
